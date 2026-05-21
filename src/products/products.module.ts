@@ -7,7 +7,7 @@ import { TypeOrmProductsRepository } from './repositories/typeorm-products.repos
 import { ProductsService } from './services/products.service';
 
 import { ProductEntity } from './entities/product.entity';
-import { CategoriesModule } from 'src/categories/categories.module';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Global()
 @Module({
