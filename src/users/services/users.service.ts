@@ -11,7 +11,7 @@ export class UsersService {
 
   async findAll(): Promise<ExternalUser[]> {
     try {
-      return await this.usersGateway.fetchAll();;
+      return await this.usersGateway.fetchAll();
     } catch {
       throw new BadGatewayException('Upstream users service failed');
     }
