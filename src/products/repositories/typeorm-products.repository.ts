@@ -16,34 +16,15 @@ export class TypeOrmProductsRepository implements ProductsRepository {
     ) {}
 
     async findAll(name?: string, orderBy?: "price" | "name", order?: "asc" | "desc"): Promise<ProductEntity[]> {
-        let products = await this.productsRepo.find();
-
-        if (name) {
-            products = products.filter(p => p.name.toLowerCase().includes(name.toLowerCase()));
-        }
-        
-        if (orderBy) {
-            products.sort((p1, p2) =>
-                orderBy === 'price'
-                ? order === 'asc' ? p1.price - p2.price : p2.price - p1.price
-                : order === 'asc' ? p1.name.localeCompare(p2.name) : p2.name.localeCompare(p1.name)
-            );
-        }
-        
-        return products;
+        return this.productosQuery(name, orderBy, order).getMany();
     }
 
     async findPaginated(pagination: PaginationInput, name?: string, orderBy?: "price" | "name", order?: "asc" | "desc"): Promise<PaginatedResult<ProductEntity>> {
-        const products = await this.findAll(name, orderBy, order);
-
         const limit = Math.min(Math.max(pagination.limit || 1 , 1), 50);
         const page = Math.max(pagination.page || 1, 1);
 
-        const total = products.length;
+        const [data, total] = await this.productosQuery(name, orderBy, order).getManyAndCount();
         const totalPages = Math.ceil(total / limit);
-
-        const start = (page - 1) * limit;
-        const data = products.slice(start, start + limit);
 
         return {
             data,
@@ -67,10 +48,7 @@ export class TypeOrmProductsRepository implements ProductsRepository {
         return this.productsRepo.save(product);
     }
 
-    async update(id: number, input: UpdateProductInput): Promise<ProductEntity | undefined> {
-        const product = await this.findById(id);
-        if (!product) return undefined;
-        
+    async update(product: ProductEntity, input: UpdateProductInput): Promise<ProductEntity> {
         Object.assign(product, {
             name: input.name ?? product.name,
             price: input.price ?? product.price,
@@ -81,17 +59,26 @@ export class TypeOrmProductsRepository implements ProductsRepository {
         return this.productsRepo.save(product);
     }
 
-    async updateStock(id: number, input: ProductStockDto): Promise<ProductEntity> {
-        const product = (await this.findById(id))!;
+    async updateStock(product: ProductEntity, input: ProductStockDto): Promise<ProductEntity> {
         product.stock -= input.quantity;
         return this.productsRepo.save(product);
     }
     
-    async remove(id: number): Promise<ProductEntity | undefined> {
-        const product = await this.findById(id);
-        if (!product) return undefined;
+    async remove(product: ProductEntity): Promise<ProductEntity> {
+        return this.productsRepo.remove(product);
+    }
 
-        await this.productsRepo.remove(product);
-        return product;
+    private productosQuery(name?: string, orderBy?: "price" | "name", order?: "asc" | "desc") {
+        const query =  this.productsRepo.createQueryBuilder('product');
+
+        if (name) {
+            query.where('LOWER(product.name) LIKE :name', { name: `%${name.toLowerCase()}%` });
+        }
+
+        if (orderBy) {
+            query.orderBy(`product.${orderBy}`, order === 'asc' ? 'ASC' : 'DESC');
+        }
+
+        return query;
     }
 }

@@ -20,8 +20,8 @@ import { UserEntity } from './auth/user.entity';
       envFilePath: ['.env', '.env.local']
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'db.sqlite',
+      type: 'better-sqlite3',
+      database: process.env.SQLITE_DATABASE,
       entities: [ProductEntity, UserEntity],
       synchronize: true
     }),

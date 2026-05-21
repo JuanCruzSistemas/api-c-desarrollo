@@ -46,9 +46,8 @@ export class ProductsService {
   }
 
   async update(id: number, input: UpdateProductInput): Promise<ProductEntity> {
-    const product = await this.productsRepository.update(id, input);
-    if (!product) throw new NotFoundException('Product not found');
-    return product;
+    const product = await this.findOne(id);
+    return this.productsRepository.update(product, input);
   }
 
   async updateStock(id: number, input: ProductStockDto): Promise<ProductEntity> {
@@ -58,13 +57,12 @@ export class ProductsService {
       throw new BadRequestException('Stock insuficiente');
     }
     
-    return this.productsRepository.updateStock(id, input);
+    return this.productsRepository.updateStock(product, input);
   }
 
   async remove(id: number): Promise<ProductEntity> {
-    const product = await this.productsRepository.remove(id);
-    if (!product) throw new NotFoundException('Product not found');
-    return product;
+    const product = await this.findOne(id);
+    return this.productsRepository.remove(product);
   }
 }
 

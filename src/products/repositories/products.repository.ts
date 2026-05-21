@@ -1,5 +1,6 @@
 import { PaginatedResult, PaginationInput } from '../../shared/pagination.types';
 import { CreateProductInput } from '../dto/create-product.dto';
+import { ProductStockDto } from '../dto/product-stock.dto';
 import { UpdateProductInput } from '../dto/update-product.dto';
 import { ProductEntity } from '../entities/product.entity';
 
@@ -10,7 +11,7 @@ export interface ProductsRepository {
   findPaginated(pagination: PaginationInput, name?: string, orderBy?: 'price' | 'name', order?: 'asc' | 'desc'): Promise<PaginatedResult<ProductEntity>>;
   findById(id: number): Promise<ProductEntity | undefined>;
   create(input: CreateProductInput): Promise<ProductEntity>;
-  update(id: number, input: UpdateProductInput): Promise<ProductEntity | undefined>;
-  updateStock(id: number, input: { quantity: number }): Promise<ProductEntity>;
-  remove(id: number): Promise<ProductEntity | undefined>;
+  update(product: ProductEntity, input: UpdateProductInput): Promise<ProductEntity>;
+  updateStock(product: ProductEntity, input: ProductStockDto): Promise<ProductEntity>;
+  remove(product: ProductEntity): Promise<ProductEntity>;
 }
