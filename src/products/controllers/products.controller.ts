@@ -1,4 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRol } from '../../auth/types/user-role.enum';
 
 import { ProductsService } from '../services/products.service';
 
@@ -33,21 +38,29 @@ export class ProductsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRol.ADMIN)
   async create(@Body() body: CreateProductInput) {
     return this.productsService.create(body);
   }
-
+  
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRol.ADMIN)
   async update(@Param('id') id: string, @Body() body: UpdateProductInput) {
     return this.productsService.update(Number(id), body);
   }
-
+  
   @Patch(':id/stock')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRol.ADMIN)
   async disminuirStock(@Param('id') id: string, @Body() body: ProductStockDto) {
     return this.productsService.updateStock(Number(id), body);
   }
-
+  
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRol.ADMIN)
   async remove(@Param('id') id: string) {
     return this.productsService.remove(Number(id));
   }

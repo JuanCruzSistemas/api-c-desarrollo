@@ -8,12 +8,14 @@ import { ProductsService } from './services/products.service';
 
 import { ProductEntity } from './entities/product.entity';
 import { CategoriesModule } from '../categories/categories.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProductEntity]),
-    forwardRef(() => CategoriesModule)
+    forwardRef(() => CategoriesModule),
+    AuthModule
   ],
   controllers: [ProductsController],
   providers: [
