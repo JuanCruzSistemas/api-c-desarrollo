@@ -1,7 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { PaginatedResult } from '../../shared/pagination.types';
-import { PaginationInput } from '../../shared/pagination.types';
+import { PaginatedResult } from '../../common/types/pagination.types';
 import { CreateProductInput } from '../dto/create-product.dto';
 import { UpdateProductInput } from '../dto/update-product.dto';
 import { ProductStockDto } from '../dto/product-stock.dto';
@@ -11,6 +10,7 @@ import { CategoryEntity } from '../../categories/entities/category.entity';
 
 import { PRODUCTS_REPOSITORY, ProductsRepository } from '../repositories/products.repository';
 import { CategoriesService } from '../../categories/services/categories.service';
+import { QueryParamsProductDto } from '../dto/query-params-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -22,14 +22,10 @@ export class ProductsService {
     private readonly categoriesService: CategoriesService
   ) {}
 
-  async findAll(name?: string, orderBy?: 'price' | 'name', order?: 'asc' | 'desc'): Promise<ProductEntity[]> {
-    return this.productsRepository.findAll(name, orderBy, order);
-  }
-
-  async findPaginated(pagination: PaginationInput, name?: string, orderBy?: 'price' | 'name', order?: 'asc' | 'desc'): Promise<PaginatedResult<ProductEntity>> {
-    const page = Math.max(pagination.page || 1, 1);
-    const limit = Math.min(Math.max(pagination.limit || 1, 1), 50);
-    return this.productsRepository.findPaginated(page, limit, name, orderBy, order);
+  async findAll(query: QueryParamsProductDto): Promise<PaginatedResult<ProductEntity>> {
+    const { page = 1, limit = 10, name, orderBy, order } = query;
+    
+    return this.productsRepository.findAll(page, limit, name, orderBy, order);
   }
 
   async findOne(id: number): Promise<ProductEntity> {

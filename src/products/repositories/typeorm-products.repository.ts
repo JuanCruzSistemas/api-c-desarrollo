@@ -1,7 +1,7 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeepPartial, Repository } from "typeorm";
 
-import { PaginatedResult } from "../../shared/pagination.types";
+import { PaginatedResult } from "../../common/types/pagination.types";
 
 import { ProductStockDto } from "../dto/product-stock.dto";
 import { UpdateProductInput } from "../dto/update-product.dto";
@@ -10,18 +10,13 @@ import { CategoryEntity } from "../../categories/entities/category.entity";
 
 import { ProductsRepository } from "./products.repository";
 
-
 export class TypeOrmProductsRepository implements ProductsRepository {
     constructor(
         @InjectRepository(ProductEntity)
         private readonly productsRepo: Repository<ProductEntity>
     ) {}
 
-    async findAll(name?: string, orderBy?: "price" | "name", order?: 'asc' | 'desc'): Promise<ProductEntity[]> {
-        return this.createQueryProducts(name, orderBy, order).getMany();
-    }
-
-    async findPaginated(page: number, limit: number, name?: string, orderBy?: "price" | "name", order?: 'asc' | 'desc'): Promise<PaginatedResult<ProductEntity>> {
+    async findAll(page: number, limit: number, name?: string, orderBy?:  'id' | 'price' | 'name' | 'stock', order?: 'asc' | 'desc'): Promise<PaginatedResult<ProductEntity>> {
         const start = (page - 1) * limit;
 
         const [data, total] = await this.createQueryProducts(name, orderBy, order)
@@ -80,7 +75,7 @@ export class TypeOrmProductsRepository implements ProductsRepository {
         return this.productsRepo.remove(product);
     }
 
-    private createQueryProducts(name?: string, orderBy?: "price" | "name", order?: 'asc' | 'desc') {
+    private createQueryProducts(name?: string, orderBy?:  'id' | 'price' | 'name' | 'stock', order?: 'asc' | 'desc') {
         const query = this.productsRepo.createQueryBuilder('product')
                                         .innerJoinAndSelect('product.category', 'category');
 

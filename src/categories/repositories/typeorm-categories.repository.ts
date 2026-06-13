@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { PaginatedResult } from "../../shared/pagination.types";
+import { PaginatedResult } from "../../common/types/pagination.types";
 import { CreateCategoryInput } from "../dto/create-category.dto";
 import { CategoryEntity } from "../entities/category.entity";
 
@@ -13,11 +13,7 @@ export class TypeOrmCategoriesRepository implements CategoriesRepository {
         private readonly categoriesRepo: Repository<CategoryEntity>
     ) {}
 
-    async findAll(name?: string, order?: 'asc' | 'desc'): Promise<CategoryEntity[]> {
-        return this.createQueryCategory(name, order).getMany();
-    }
-
-    async findPaginated(page: number, limit: number, name?: string, order?: 'asc' | 'desc'): Promise<PaginatedResult<CategoryEntity>> {
+    async findAll(page: number, limit: number, name?: string, order?: 'asc' | 'desc'): Promise<PaginatedResult<CategoryEntity>> {
         const start = (page - 1) * limit;
 
         const [data, total] = await this.createQueryCategory(name, order)

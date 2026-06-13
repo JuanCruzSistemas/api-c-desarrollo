@@ -7,8 +7,3 @@ export type PaginatedResult<T> = {
         totalPages: number;
     };
 };
-
-export type PaginationInput = {
-    page?: number;
-    limit?: number;
-};

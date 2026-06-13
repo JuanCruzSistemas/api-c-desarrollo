@@ -1,7 +1,6 @@
 import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { PaginatedResult } from '../../shared/pagination.types';
-import { PaginationInput } from '../../shared/pagination.types';
+import { PaginatedResult } from '../../common/types/pagination.types';
 import { CreateCategoryInput } from '../dto/create-category.dto';
 
 import { ProductEntity } from '../../products/entities/product.entity';
@@ -9,6 +8,7 @@ import { CategoryEntity } from '../entities/category.entity';
 
 import { CATEGORIES_REPOSITORY, CategoriesRepository } from '../repositories/categories.repository';
 import { ProductsService } from '../../products/services/products.service';
+import { QueryParamsCategoryDto } from '../dto/query-params-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -20,14 +20,11 @@ export class CategoriesService {
         private readonly productsService: ProductsService
     ) {}
 
-    async findAll(name?: string, order?: 'asc' | 'desc'): Promise<CategoryEntity[]> {
-        return this.categoriesRepo.findAll(name, order);
-    }
-
-    async findPaginated(pagination: PaginationInput, name?: string, order?: 'asc' | 'desc'): Promise<PaginatedResult<CategoryEntity>> {
-        const page = Math.max(pagination.page || 1, 1);
-        const limit = Math.min(Math.max(pagination.limit || 1, 1), 50);
-        return this.categoriesRepo.findPaginated(page, limit, name, order);
+    async findAll(queryParams: QueryParamsCategoryDto): Promise<PaginatedResult<CategoryEntity>> {
+        const { page = 1, limit = 10, name, order } = queryParams;
+        // const parsedPage = Math.max(page || 1, 1);
+        // const parsedLimit = Math.min(Math.max(limit || 1, 1), 50);
+        return this.categoriesRepo.findAll(page, limit, name, order);
     }
 
     async findOne(id: number): Promise<CategoryEntity> {

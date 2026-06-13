@@ -8,6 +8,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateCategoryInput } from '../dto/create-category.dto';
 
 import { CategoriesService } from '../services/categories.service';
+import { QueryParamsCategoryDto } from '../dto/query-params-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -15,20 +16,19 @@ export class CategoriesController {
         private readonly categoriesService: CategoriesService
     ) {}
 
+    // @Get()
+    // async findAll(
+    //     @Query('name') name?: string,
+    //     @Query('order') order?: 'asc' | 'desc',
+    //     @Query('page') page?: string,
+    //     @Query('limit') limit?: string
+    // ) {
+    //     return this.categoriesService.findAll(Number(page), Number(limit), name, order);
+    // }
+
     @Get()
-    async findAll(
-        @Query('name') name?: string,
-        @Query('order') order?: 'asc' | 'desc',
-        @Query('page') page?: string,
-        @Query('limit') limit?: string
-    ) {
-        if (page !== undefined || limit !== undefined) {
-            return this.categoriesService.findPaginated({
-                page: Number(page),
-                limit: Number(limit)
-            }, name, order);
-        }
-        return this.categoriesService.findAll(name, order);
+    async findAll(@Query() query: QueryParamsCategoryDto) {
+        return this.categoriesService.findAll(query);
     }
 
     @Get(':id')

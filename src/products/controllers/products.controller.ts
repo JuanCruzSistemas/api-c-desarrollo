@@ -10,6 +10,7 @@ import { UpdateProductInput } from '../dto/update-product.dto';
 import { ProductStockDto } from '../dto/product-stock.dto';
 
 import { ProductsService } from '../services/products.service';
+import { QueryParamsProductDto } from '../dto/query-params-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -18,18 +19,8 @@ export class ProductsController {
   ) {}
 
   @Get()
-  async findAll(
-    @Query('name') name: string,
-    @Query('orderBy') orderBy: 'price' | 'name',
-    @Query('order') order: 'asc' | 'desc',
-    @Query('page') page?: string,
-    @Query('limit') limit?: string
-  ) {
-    if (page !== undefined || limit !== undefined) {
-      return this.productsService.findPaginated({ page: Number(page), limit: Number(limit) }, name, orderBy, order);
-    }
-
-    return this.productsService.findAll(name, orderBy, order);
+  async findAll(@Query() query: QueryParamsProductDto) {
+    return this.productsService.findAll(query);
   }
 
   @Get(':id')
