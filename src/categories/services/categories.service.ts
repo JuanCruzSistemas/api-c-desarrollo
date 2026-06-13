@@ -22,8 +22,7 @@ export class CategoriesService {
 
     async findAll(queryParams: QueryParamsCategoryDto): Promise<PaginatedResult<CategoryEntity>> {
         const { page = 1, limit = 10, name, order } = queryParams;
-        // const parsedPage = Math.max(page || 1, 1);
-        // const parsedLimit = Math.min(Math.max(limit || 1, 1), 50);
+        
         return this.categoriesRepo.findAll(page, limit, name, order);
     }
 

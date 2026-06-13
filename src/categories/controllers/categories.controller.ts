@@ -16,16 +16,6 @@ export class CategoriesController {
         private readonly categoriesService: CategoriesService
     ) {}
 
-    // @Get()
-    // async findAll(
-    //     @Query('name') name?: string,
-    //     @Query('order') order?: 'asc' | 'desc',
-    //     @Query('page') page?: string,
-    //     @Query('limit') limit?: string
-    // ) {
-    //     return this.categoriesService.findAll(Number(page), Number(limit), name, order);
-    // }
-
     @Get()
     async findAll(@Query() query: QueryParamsCategoryDto) {
         return this.categoriesService.findAll(query);
